@@ -1,0 +1,49 @@
+---
+title: "Project2 Pt2 Analysis"
+author: "Rohini"
+date: "12/15/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## A tutorial for my_rf_cv
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+data <- read.csv("../Data/my_penguins.csv") %>% na.omit() %>%
+    select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g)
+
+rf_cv_function <- source("../Code/my_rf_cv.R")$value
+
+k_vals <- c(2,5,10)
+cv_sd <- c()
+cv_means <- c()
+all_statistics <- data.frame(matrix(NA, nrow = 30, ncol = 3))
+for (i in 1:3) {
+  MSE_vals <- c()
+  for (j in 1:30) {
+    cv_val <- rf_cv_function(data, k_vals[i])
+    MSE_vals <- append(MSE_vals, cv_val)
+  }
+  cv_sd <- append(cv_sd, sd(MSE_vals))
+  cv_means <- append(cv_means, mean(MSE_vals))
+  all_statistics[,i] <- MSE_vals
+  colnames(all_statistics)<- c("k=2","k=5","k=10")
+  plotname <- paste0("boxplot_", i, ".jpg")
+  boxplot(MSE_vals, main=paste("k value", k_vals[i]), ylab="Cross Validation Error")
+  ggsave(
+    plotname,
+    path = "../Output/Figures"
+  )
+}
+
+summary_stats <- data.frame(k_vals, cv_means, cv_sd)
+saveRDS(summary_stats, file="../Output/Results/summary_stats.rds")
+write.csv(all_statistics, file="../Output/Results/all_cv_values.csv")
+```
+From these results we can see that a higher number of k leads to a lower standard deviation. This means there is less variability within the estimate output data. In the boxplots we can also see that the third model is more "evenly" spread across a smaller range while the other two models have a much wider range. From this we can infer that a larger value of k delivers more precise results (remember, precision is not equal to accuracy).
