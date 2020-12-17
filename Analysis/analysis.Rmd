@@ -40,7 +40,9 @@ colnames(all_statistics)<- c("k2","k5","k10")
 boxplots <- ggplot() + 
   geom_boxplot(all_statistics, mapping=aes(x=2, y=k2)) +
   geom_boxplot(all_statistics, mapping=aes(x=5, y=k5)) + 
-  geom_boxplot(all_statistics, mapping=aes(x=10, y=k10))
+  geom_boxplot(all_statistics, mapping=aes(x=10, y=k10)) +
+  labs(x="K neighbors", y="Error", title="Cross Validation Error by Random Forest")
+boxplots
 
 ggsave(
   "boxplots.png",
