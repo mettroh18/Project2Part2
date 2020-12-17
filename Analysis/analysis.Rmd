@@ -46,6 +46,7 @@ boxplots
 
 ggsave(
   "boxplots.png",
+  plot = boxplots,
   path = "../Output/Figures"
 )
 
